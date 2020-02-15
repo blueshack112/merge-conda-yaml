@@ -1,6 +1,0 @@
-channels:
-  - conda
-dependencies:
-  - fabric
-  - pip:
-    - genty
