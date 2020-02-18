@@ -1,6 +1,9 @@
 import yaml
 import sys
 import argparse
+import os
+import datetime
+
 from os import path
 from collections import OrderedDict, deque
 from copy import deepcopy
@@ -48,15 +51,26 @@ def dump(output_yaml, piplist):
     file as well as the requirements.txt file formatted to be used by PIP
     
     """
-    print("\nOutput YAML:")
-    print("=============")
-    yaml.dump(output_yaml, sys.stdout,
-            indent=2, default_flow_style=False)
+    # Outputting to files
+    cwd = os.getcwd()
+    today = datetime.datetime.today()
+    suffix = str(today.day) + str(today.month) + "_" + str(today.hour) + str(today.minute) + str(today.second)
+    outputyamlfilename = "mergedYAML_{}.yml".format(suffix)
+    outputreqfilename = "mergedPIPs_{}.txt".format(suffix)
+
+    # Writing YAML file
+    with open(path.join(cwd, outputyamlfilename), 'w') as f:
+        yaml.dump(output_yaml, f, indent=2, default_flow_style=False)
+
+    # Writing requirements.txt file
+    with open (path.join(cwd, outputreqfilename), 'w') as rf:
+        for pipdep in piplist.get('pip'):
+            rf.write(pipdep)
+            rf.write("\n")
     
-    print ("\n\nPip Requirements.txt File:")
-    print ("===========================")
-    for pipdep in piplist.get('pip'):
-        print (pipdep)
+    print ("\nThe output YAML and pip requirements have been written in {} and {}.".format(outputyamlfilename, outputreqfilename))
+
+
 
 def merge (yaml1, yaml2):
     """Function that will handle the merging of two yamls"""
